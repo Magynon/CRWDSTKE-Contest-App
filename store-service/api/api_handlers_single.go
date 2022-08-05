@@ -1,7 +1,6 @@
 package api
 
 import (
-	//"exam-api/domain"
 	exam_api_domain "exam-api/domain"
 	"fmt"
 	"github.com/emicklei/go-restful/v3"
@@ -48,23 +47,44 @@ func (api *API) getProductSingle(req *restful.Request, resp *restful.Response) {
 	product, isProductThere, err := api.storage.Get(id)
 	if err != nil {
 		log.Errorf("Failed to get product, err=%v", err)
-		_ = resp.WriteError(http.StatusBadRequest, fmt.Errorf("failed to get product %v", err))
+		_ = resp.WriteError(http.StatusNotFound, fmt.Errorf("failed to get product %v", err))
 		return
 	}
 
 	if !isProductThere {
 		log.Errorf("Failed to get product, err=%v", err)
-		_ = resp.WriteError(http.StatusBadRequest, fmt.Errorf("product is not available"))
+		_ = resp.WriteError(http.StatusNotFound, fmt.Errorf("product is not available"))
 		return
 	}
 
 	resp.WriteAsJson(product)
-
 }
 
 func (api *API) updateProductSingle(req *restful.Request, resp *restful.Response) {
+	product := exam_api_domain.Product{}
+	err := req.ReadEntity(&product)
+	if err != nil {
+		log.Errorf("Failed to read product, err=%v", err)
+		resp.WriteError(http.StatusConflict, fmt.Errorf("read error: %v", err))
+		return
+	}
 
-	panic("TODO")
+	id := product.GetHash()
+	if id == "" {
+		log.Errorf("Failed to read id")
+		_ = resp.WriteError(http.StatusBadRequest, fmt.Errorf("id not ok"))
+		return
+	}
+
+	alreadyInDatabase, err := api.storage.Update(id, product)
+
+	if !alreadyInDatabase {
+		log.Errorf("Product not found in database")
+		_ = resp.WriteError(http.StatusNotFound, fmt.Errorf("product not found"))
+		return
+	}
+	
+	resp.WriteAsJson(id)
 }
 
 func (api *API) deleteProductSingle(req *restful.Request, resp *restful.Response) {
