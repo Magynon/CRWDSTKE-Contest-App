@@ -184,6 +184,7 @@ func (api *API) getProductHTTPBatch(req *restful.Request, resp *restful.Response
 		go func(id string) {
 			defer wg.Done()
 			product, ok, err := api.client.Get(id)
+
 			if err != nil {
 				log.Printf("[ERROR] Couldn't get product from storage")
 				resp.WriteError(http.StatusInternalServerError, restful.NewError(http.StatusInternalServerError, err.Error()+"\n"))

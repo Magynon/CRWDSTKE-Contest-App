@@ -60,7 +60,7 @@ func (c *Client) Get(id string) (domain.Product, bool, error) {
 	method := "GET"
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url+"?id="+id, strings.NewReader(id))
+	req, err := http.NewRequest(method, url+"?id="+id, nil)
 
 	if err != nil {
 		fmt.Println(err)
@@ -68,7 +68,7 @@ func (c *Client) Get(id string) (domain.Product, bool, error) {
 	}
 	req.Header.Add("Content-Type", "application/json")
 
-	res, err := client.Do(req)
+	res, _ := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
 		return domain.Product{}, false, err
@@ -80,8 +80,15 @@ func (c *Client) Get(id string) (domain.Product, bool, error) {
 		fmt.Println(err)
 		return domain.Product{}, false, err
 	}
-	fmt.Println(string(body))
-	return , true, nil
+
+	// unmarshal the body into a product
+	var product domain.Product
+	err = json.Unmarshal(body, &product)
+	if err != nil {
+		fmt.Println(err)
+		return domain.Product{}, false, err
+	}
+	return product, true, nil
 }
 
 func (c *Client) Update(id string, diff domain.ProductDiff) (bool, error) {
