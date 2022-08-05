@@ -72,7 +72,7 @@ func (api *API) updateProductSingle(req *restful.Request, resp *restful.Response
 		return
 	}
 
-	id := product.GetHash()
+	id := product.Name
 	if id == "" {
 		log.Errorf("Failed to read id")
 		_ = resp.WriteError(http.StatusBadRequest, fmt.Errorf("id not ok"))
