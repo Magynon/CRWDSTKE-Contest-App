@@ -1,8 +1,7 @@
 package api
 
 import (
-	exam_api_domain "exam-api/domain"
-
+	"exam-store/domain"
 	"github.com/emicklei/go-restful/v3"
 )
 
@@ -11,10 +10,10 @@ const (
 )
 
 type API struct {
-	storage exam_api_domain.Storage
+	storage domain.Storage
 }
 
-func NewAPI(store exam_api_domain.Storage) *API {
+func NewAPI(store domain.Storage) *API {
 	return &API{
 		storage: store,
 	}

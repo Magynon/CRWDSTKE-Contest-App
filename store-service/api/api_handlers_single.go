@@ -1,7 +1,8 @@
 package api
 
 import (
-	exam_api_domain "exam-api/domain"
+	"exam-store/domain"
+	exam_api_domain "exam-store/domain"
 	"fmt"
 	"github.com/emicklei/go-restful/v3"
 	log "github.com/sirupsen/logrus"
@@ -9,7 +10,7 @@ import (
 )
 
 func (api *API) createProductSingle(req *restful.Request, resp *restful.Response) {
-	product := exam_api_domain.Product{}
+	product := domain.Product{}
 	err := req.ReadEntity(&product)
 	if err != nil {
 		log.Errorf("Failed to read product, err=%v", err)
@@ -38,7 +39,7 @@ func (api *API) createProductSingle(req *restful.Request, resp *restful.Response
 
 func (api *API) getProductSingle(req *restful.Request, resp *restful.Response) {
 	id := req.QueryParameter("id")
-	product := exam_api_domain.Product{}
+	product := domain.Product{}
 	if id == "" {
 		log.Errorf("Failed to read id")
 		_ = resp.WriteError(http.StatusBadRequest, fmt.Errorf("id must be provided"))

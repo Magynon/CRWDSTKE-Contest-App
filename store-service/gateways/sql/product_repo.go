@@ -3,7 +3,7 @@ package sql
 import (
 	"context"
 	"database/sql"
-	exam_api_domain "exam-api/domain"
+	exam_api_domain "exam-store/domain"
 	"fmt"
 
 	"github.com/lib/pq"
@@ -25,7 +25,7 @@ const (
 						SET 
 						    price = $2,
 						    stock = $3,
-						    tags = $4,
+						    tags = $4
 						WHERE id = $1
 						RETURNING id, name, manufacturer, price, stock, tags`
 )
