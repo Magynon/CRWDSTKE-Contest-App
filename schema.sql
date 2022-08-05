@@ -1,8 +1,11 @@
 -- Example create
 CREATE TABLE IF NOT EXISTS products(
-    id char(64) primary key,
-    name char(64) not null,
-    tags char(64)[]
+    id varchar(64) primary key,
+    name varchar(64) not null,
+    manufacturer varchar(64),
+    price integer,
+    stock integer,
+    tags varchar(64)[]
     );
 
 -- Example insert
