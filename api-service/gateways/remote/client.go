@@ -56,11 +56,11 @@ func (c *Client) Save(product domain.Product) (string, bool, error) {
 }
 
 func (c *Client) Get(id string) (domain.Product, bool, error) {
-	url := "http://localhost:8081/store/product"
+	url := "http://localhost:8081/store/product/"
 	method := "GET"
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, strings.NewReader(id))
+	req, err := http.NewRequest(method, url+"?id="+id, strings.NewReader(id))
 
 	if err != nil {
 		fmt.Println(err)
@@ -81,7 +81,7 @@ func (c *Client) Get(id string) (domain.Product, bool, error) {
 		return domain.Product{}, false, err
 	}
 	fmt.Println(string(body))
-	return domain.Product{}, true, nil
+	return , true, nil
 }
 
 func (c *Client) Update(id string, diff domain.ProductDiff) (bool, error) {
