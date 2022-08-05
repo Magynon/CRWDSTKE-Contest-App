@@ -17,7 +17,18 @@ const (
 
 	sqlGetByIDStmts = `SELECT id, name, manufacturer, price, stock, tags
 					FROM products 
-					WHERE id = ANY($1)`
+					WHERE id = $1`
+
+	sqlDeleteByIDStmt = `DELETE FROM products WHERE id = $1 
+					RETURNING id, name, manufacturer, price, stock, tags`
+	sqlUpdateByIDStmts = `UPDATE products
+						SET 
+						    manufacturer = $2,
+						    price = $3,
+						    stock = $4,
+						    tags = $5,
+						WHERE id = $1
+						RETURNING id, name, manufacturer, price, stock, tags`
 )
 
 type ProductRepository struct {
@@ -54,8 +65,7 @@ func (p *ProductRepository) Save(product exam_api_domain.Product) (string, bool,
 
 func (p *ProductRepository) Get(id string) (exam_api_domain.Product, bool, error) {
 	ctx := context.Background()
-
-	rows, err := p.db.QueryContext(ctx, sqlGetByIDStmts, pq.Array(id))
+	rows, err := p.db.QueryContext(ctx, sqlGetByIDStmts, id)
 	if err != nil {
 		return exam_api_domain.Product{}, false, err
 	}
@@ -90,9 +100,31 @@ func (p *ProductRepository) Get(id string) (exam_api_domain.Product, bool, error
 }
 
 func (p *ProductRepository) Update(id string, diff exam_api_domain.Product) (bool, error) {
-	return false, nil
+	ctx := context.Background()
+	row := p.db.QueryRowContext(
+		ctx,
+		sqlUpdateByIDStmts,
+		[]byte(id),
+		[]byte(diff.Name),
+		[]byte(diff.Manufacturer),
+		diff.Price,
+		diff.Stock,
+		pq.Array(diff.Tags))
+	if row.Err() != nil {
+		return true, row.Err()
+	}
+
+	return false, row.Err()
 }
 
 func (p *ProductRepository) Delete(id string) (bool, error) {
+	ctx := context.Background()
+	rows, err := p.db.QueryContext(ctx, sqlDeleteByIDStmt, id)
+	if err != nil {
+		return false, err
+	}
+	if rows.Err() != nil {
+		return false, rows.Err()
+	}
 	return false, nil
 }
