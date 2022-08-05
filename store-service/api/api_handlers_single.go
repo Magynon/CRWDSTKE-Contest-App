@@ -32,6 +32,7 @@ func (api *API) createProductSingle(req *restful.Request, resp *restful.Response
 	}
 
 	resp.WriteAsJson(id)
+	log.Infof("Product %v created", id)
 
 }
 
@@ -58,6 +59,7 @@ func (api *API) getProductSingle(req *restful.Request, resp *restful.Response) {
 	}
 
 	resp.WriteAsJson(product)
+	log.Infof("Product %v got", id)
 }
 
 func (api *API) updateProductSingle(req *restful.Request, resp *restful.Response) {
@@ -78,13 +80,20 @@ func (api *API) updateProductSingle(req *restful.Request, resp *restful.Response
 
 	alreadyInDatabase, err := api.storage.Update(id, product)
 
+	if err != nil {
+		log.Errorf("Failed to insert in database: %v", err)
+		resp.WriteError(http.StatusConflict, fmt.Errorf("read error: %v", err))
+		return
+	}
+
 	if !alreadyInDatabase {
 		log.Errorf("Product not found in database")
 		_ = resp.WriteError(http.StatusNotFound, fmt.Errorf("product not found"))
 		return
 	}
-	
+
 	resp.WriteAsJson(id)
+	log.Infof("Product %v updated", id)
 }
 
 func (api *API) deleteProductSingle(req *restful.Request, resp *restful.Response) {

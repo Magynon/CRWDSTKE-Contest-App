@@ -23,10 +23,9 @@ const (
 					RETURNING id, name, manufacturer, price, stock, tags`
 	sqlUpdateByIDStmts = `UPDATE products
 						SET 
-						    manufacturer = $2,
-						    price = $3,
-						    stock = $4,
-						    tags = $5,
+						    price = $2,
+						    stock = $3,
+						    tags = $4,
 						WHERE id = $1
 						RETURNING id, name, manufacturer, price, stock, tags`
 )
@@ -105,8 +104,6 @@ func (p *ProductRepository) Update(id string, diff exam_api_domain.Product) (boo
 		ctx,
 		sqlUpdateByIDStmts,
 		[]byte(id),
-		[]byte(diff.Name),
-		[]byte(diff.Manufacturer),
 		diff.Price,
 		diff.Stock,
 		pq.Array(diff.Tags))
@@ -114,7 +111,7 @@ func (p *ProductRepository) Update(id string, diff exam_api_domain.Product) (boo
 		return true, row.Err()
 	}
 
-	return false, row.Err()
+	return true, row.Err()
 }
 
 func (p *ProductRepository) Delete(id string) (bool, error) {
