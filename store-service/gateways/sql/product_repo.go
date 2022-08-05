@@ -123,5 +123,5 @@ func (p *ProductRepository) Delete(id string) (bool, error) {
 	if rows.Err() != nil {
 		return false, rows.Err()
 	}
-	return false, nil
+	return true, nil
 }

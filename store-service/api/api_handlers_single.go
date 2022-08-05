@@ -22,13 +22,13 @@ func (api *API) createProductSingle(req *restful.Request, resp *restful.Response
 
 	if err != nil {
 		log.Errorf("Failed to save product, err=%v", err)
-		resp.WriteError(http.StatusInternalServerError, fmt.Errorf("save error: %v", err))
+		resp.WriteError(http.StatusConflict, fmt.Errorf("save error: %v", err))
 		return
 	}
 
 	if alreadyInDatabase {
 		log.Errorf("Failed to save product, err=%v", err)
-		resp.WriteError(http.StatusFound, fmt.Errorf("already in database"))
+		resp.WriteError(http.StatusConflict, fmt.Errorf("already in database"))
 		return
 	}
 
@@ -98,5 +98,29 @@ func (api *API) updateProductSingle(req *restful.Request, resp *restful.Response
 }
 
 func (api *API) deleteProductSingle(req *restful.Request, resp *restful.Response) {
-	panic("TODO")
+
+	id := req.QueryParameter("id")
+	if id == "" {
+		log.Errorf("Failed to read id")
+		_ = resp.WriteError(http.StatusBadRequest, fmt.Errorf("id must be provided"))
+		return
+	}
+
+	productFound, err := api.storage.Delete(id)
+
+	if err != nil {
+		log.Errorf("Failed to find product in database: %v", err)
+		resp.WriteError(http.StatusConflict, fmt.Errorf("read error: %v", err))
+		return
+	}
+
+	if !productFound {
+		log.Errorf("Failed to find product in database: %v", err)
+		resp.WriteError(http.StatusConflict, fmt.Errorf("read error: %v", err))
+		return
+	}
+
+	resp.WriteAsJson(id)
+	log.Infof("Product %v deleted", id)
+
 }
