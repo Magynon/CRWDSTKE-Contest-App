@@ -11,6 +11,6 @@ type Queue interface {
 type Storage interface {
 	Save(product Product) (string, bool, error)
 	Get(id string) (Product, bool, error)
-	Update(id string, diff Product) (bool, error)
+	Update(id string, diff ProductDiff) (bool, error)
 	Delete(id string) (bool, error)
 }

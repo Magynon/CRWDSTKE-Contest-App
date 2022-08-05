@@ -50,10 +50,39 @@ func (s *Store) Get(id string) (domain.Product, bool, error) {
 	return p, true, nil
 }
 
-func (s *Store) Update(id string, diff domain.Product) (bool, error) {
-	panic("TODO")
+func (s *Store) Update(id string, diff domain.ProductDiff) (bool, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	// check if id exists in map
+	_, ok := s.products[id]
+
+	// initialize new product
+	newProduct := domain.Product{
+		Name:         s.products[id].Name,
+		Manufacturer: s.products[id].Manufacturer,
+		Price:        diff.Diff.Price,
+		Stock:        diff.Diff.Stock,
+		Tags:         diff.Diff.Tags,
+	}
+
+	// update product
+	s.products[id] = newProduct
+
+	// return updated product
+	return ok, nil
 }
 
 func (s *Store) Delete(id string) (bool, error) {
-	panic("TODO")
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	// check if id exists in map
+	_, ok := s.products[id]
+
+	// delete id from products
+	delete(s.products, id)
+
+	// return deleted product
+	return ok, nil
 }

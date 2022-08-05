@@ -40,7 +40,7 @@ func (api *API) RegisterRoutes(ws *restful.WebService) {
 	ws.Route(ws.DELETE(memoryRootPath + productPath + versionBatch).To(api.deleteProductMemoryBatch))
 
 	// TODO create similar routes that use the store service. For this you will need to create
-	// a http client that implemets the domain.Storage interface and add it to the api.
+	// a http client that implements the domain.Storage interface and add it to the api.
 	// The handlers should be similar to those using memory storage
 
 }
