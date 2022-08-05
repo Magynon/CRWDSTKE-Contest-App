@@ -1,6 +1,6 @@
 package main
 
-import "API/service"
+import "exam-store/service"
 
 func main() {
 	s := service.NewService()
