@@ -1,0 +1,9 @@
+version: '3'
+services:
+  redis:
+    image: "postgres:latest"
+    container_name: postgres
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data:/data
