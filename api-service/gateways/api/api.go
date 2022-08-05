@@ -2,6 +2,7 @@ package api
 
 import (
 	"exam-api/domain"
+	"exam-api/gateways/remote"
 
 	"github.com/emicklei/go-restful/v3"
 )
@@ -19,6 +20,7 @@ const (
 
 type API struct {
 	storage domain.Storage
+	client  remote.Client
 }
 
 func NewAPI(store domain.Storage) *API {
@@ -39,8 +41,14 @@ func (api *API) RegisterRoutes(ws *restful.WebService) {
 	ws.Route(ws.PATCH(memoryRootPath + productPath + versionBatch).To(api.updateProductMemoryBatch))
 	ws.Route(ws.DELETE(memoryRootPath + productPath + versionBatch).To(api.deleteProductMemoryBatch))
 
-	// TODO create similar routes that use the store service. For this you will need to create
-	// a http client that implements the domain.Storage interface and add it to the api.
-	// The handlers should be similar to those using memory storage
+	ws.Route(ws.POST(httpRootPath + productPath + versionSingle).To(api.createProductHTTPSingle))
+	ws.Route(ws.GET(httpRootPath + productPath + versionSingle).To(api.getProductHTTPSingle))
+	ws.Route(ws.PATCH(httpRootPath + productPath + versionSingle).To(api.updateProductHTTPSingle))
+	ws.Route(ws.DELETE(httpRootPath + productPath + versionSingle).To(api.deleteProductHTTPSingle))
+
+	ws.Route(ws.POST(httpRootPath + productPath + versionBatch).To(api.createProductHTTPBatch))
+	ws.Route(ws.GET(httpRootPath + productPath + versionBatch).To(api.getProductHTTPBatch))
+	ws.Route(ws.PATCH(httpRootPath + productPath + versionBatch).To(api.updateProductHTTPBatch))
+	ws.Route(ws.DELETE(httpRootPath + productPath + versionBatch).To(api.deleteProductHTTPBatch))
 
 }
