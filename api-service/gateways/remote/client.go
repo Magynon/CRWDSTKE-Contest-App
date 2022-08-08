@@ -92,10 +92,72 @@ func (c *Client) Get(id string) (domain.Product, bool, error) {
 }
 
 func (c *Client) Update(id string, diff domain.ProductDiff) (bool, error) {
-	panic("Implement me")
+	url := "http://localhost:8081/store/product"
+	method := "PATCH"
+
+	client := &http.Client{}
+
+	// initialize new product
+	newProduct := domain.Product{
+		Name:         id,
+		Manufacturer: "",
+		Price:        diff.Diff.Price,
+		Stock:        diff.Diff.Stock,
+		Tags:         diff.Diff.Tags,
+	}
+
+	marshalledProduct, err := json.Marshal(newProduct)
+
+	req, err := http.NewRequest(method, url, strings.NewReader(string(marshalledProduct)))
+
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	defer res.Body.Close()
+
+	_, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (c *Client) Delete(id string) (bool, error) {
-	panic("Implement me")
+	url := "http://localhost:8081/store/product/"
+	method := "DELETE"
 
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url+"?id="+id, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	fmt.Println(string(body))
+
+	return true, nil
 }

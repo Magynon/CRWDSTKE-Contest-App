@@ -108,7 +108,7 @@ func (p *ProductRepository) Update(id string, diff exam_api_domain.Product) (boo
 		diff.Stock,
 		pq.Array(diff.Tags))
 	if row.Err() != nil {
-		return true, row.Err()
+		return false, row.Err()
 	}
 
 	return true, row.Err()
